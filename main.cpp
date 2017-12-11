@@ -13,8 +13,10 @@ template<class T>
 
 
 
+template<class T>
+void new_head(Node<T>* head_ptr){
 
-
+}
 
 
 
