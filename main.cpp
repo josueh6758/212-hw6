@@ -9,7 +9,7 @@ template<class T>
      BST(): m_root(0) {}
      BST(const BST&);
      void operator=(const BST&);
-     ~BST();
+     //~BST();
 
      bool remove(const T&);
      void insert(const T&);
@@ -42,6 +42,7 @@ void BST<T>::insert(const T& entry){
 		//means this is an empty tree 
 		m_root = new Node<T>( entry);
 		cout<<"Initiated a Tree!\n";
+		++m_active;
 		return;
 	}	
 	Node<T>* cursor = m_root;
@@ -57,10 +58,12 @@ void BST<T>::insert(const T& entry){
 		if(entry.num_ssn() < cursor->get_data().num_ssn() && !(cursor->get_left_ptr()))
 		{
 				cursor->set_left_ptr(node_new(entry));
+				++m_active;
 				return;
 				}
 		if(entry.num_ssn() > cursor->get_data().num_ssn() && !(cursor->get_right_ptr())){
 				cursor->set_right_ptr(node_new(entry));
+				++m_active;
 				return;
 				}
 		}
@@ -74,4 +77,6 @@ void BST<T>::insert(const T& entry){
 
 
 int main(){
+	BST<Student> tree;
+
 }
