@@ -24,6 +24,72 @@ template<class T>
      long  m_inactive; // count of inactive nodes.  
        };
 
+template<class T>
+int compress(Node<T>*  head_ptr)
+{
+    //CASE 1 - non-existent
+    if(!head_ptr) return 0;
+    int count = 0;
+    count = compress(head_ptr->get_left_link());
+    count = compress(head_ptr->get_right_link());
+    
+    //CASE 2 - active
+    if(*head_ptr->m_act)
+    {
+        count = compress(head_ptr->get_left_link());
+        count = compress(head_ptr->get_right_link());
+        count += count;
+        return count;
+    }
+    //CASE 3 - unactive
+    else {
+        //CASE 1 - Sub-trees exist, go left, hard right
+        if(head_ptr->get_right_link() && head_ptr->get_left_link())
+        {
+            Node<T>* cur_ptr = head_ptr;
+            cur_ptr = head_ptr->get_left_link();
+            while(cur_ptr->get_right_link())
+            {
+                cur_ptr = cur_ptr->get_right_link();
+                left_ptr = left_ptr->get_left_link();
+            }
+            return ++count;
+        }
+        //CASE 2 - only left sub-trees
+        else if(!head_ptr->get_right_link())
+        {
+            Node<T>* cur_ptr;
+            cur_ptr = head_ptr;
+            while(cur_ptr->get_left_link())
+            {
+                cur_ptr = cur_ptr->get_left_link();
+            }
+            delete_left(head_ptr);
+            ++count;
+            return count;
+        }
+        //CASE 3 - only right sub-trees
+        else if(!(head_ptr->get_left_link()))
+        {
+            Node<T>* cur_ptr;
+            cur_ptr = head_ptr;
+            while(cur_ptr->get_right_link())
+            {
+                cur_ptr = cur_ptr->get_right_link();
+            }
+            delete_right(head_ptr);
+            ++count;
+            return count;
+            
+        }
+        else
+        {
+            cout << "something is wrong" << endl;
+        }
+    }
+    
+}
+
 
 template<class T>
 bool BST<T>::is_member(const T& student) const{
