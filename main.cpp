@@ -47,12 +47,20 @@ int compress(Node<T>*  head_ptr)
         if(head_ptr->get_right_link() && head_ptr->get_left_link())
         {
             Node<T>* cur_ptr = head_ptr;
+            Node<T>* left_ptr = head_ptr->get_left_link();
+            Node<T>* right_ptr = head_ptr->get_right_link();
             cur_ptr = head_ptr->get_left_link();
             while(cur_ptr->get_right_link())
             {
                 cur_ptr = cur_ptr->get_right_link();
                 left_ptr = left_ptr->get_left_link();
             }
+            //CASE 1.1 - check if right subtree has left child
+            if(right_ptr->get_left_link())
+                {
+                    left_ptr->set_right_link(right_ptr->get_left_link());
+                }
+            
             return ++count;
         }
         //CASE 2 - only left sub-trees
