@@ -26,8 +26,6 @@ template<class T>
    };
 
 
-
-
 template<class T>
 Node<T>* node_new(T& entry){
 /* pre-condition:  i want to create a new node and return a pointer to this node.
