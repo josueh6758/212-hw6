@@ -25,25 +25,25 @@ template<class T>
        };
 
 template<class T>
-Node<T>* tree_search(T& student)
+Node<T>* BST<T>:: tree_search(T& student)
 {
  Node<T>* cursor = m_root;
   //int cursor_ssn = cursor.get_data().num_ssn()
-  if(student.num_ssn() == cursor.get_data().num_ssn())
+  if(student.num_ssn() == cursor->get_data().num_ssn())
   {
       return cursor;
   }
-  else if (student.num_ssn() < cursor.get_data().num_ssn())
+  else if (student.num_ssn() < cursor->get_data().num_ssn())
   {
       Node<T>* cur;
       cur = cur->get_right_link();
-      tree_search(cur->get_data())
+      tree_search(cur->get_data());
   }
-  else if (student.num_ssn() > cursor.get_data().num_ssn())
+  else if (student.num_ssn() > cursor->get_data().num_ssn())
   {
       Node<T>* cur;
       cur = cur->get_right_link();
-      tree_search(cur->get_data())
+      tree_search(cur->get_data());
   }
     return cursor;
 }
