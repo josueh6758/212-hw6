@@ -10,9 +10,9 @@ template<class T>
      BST(const BST&);
      void operator=(const BST&);
      //~BST();
-
+     void display();
      bool remove(const T&);
-     void insert(const T&);
+     void insert( T&);
      bool is_member(const T&) const;
      long size() const { return m_active; }
      void compress();  // removed all marked nodes.
@@ -24,53 +24,57 @@ template<class T>
      long  m_inactive; // count of inactive nodes.  
        };
 
-
 template<class T>
-bool BST<T>::is_member(const T& student) const{
-	Node<T>* cursor = m_root;
-	do{
-	if(cursor->get_data().num_ssn()==student.num_ssn()) return true;
-		
-	}while(!(cursor->is_leaf()));
+void BST<T>::display(){
+"This is the tree:\n";
+if(m_root==0){ cout<<"empty tree!"<<endl; return;}
+node_print(m_root);
 }
 
 
 
 template<class T>
-void BST<T>::insert(const T& entry){
+bool BST<T>::is_member(const T& student) const{
+return true;
+}
+
+
+
+template<class T>
+void BST<T>::insert( T& entry){
 	if(m_root==0){
 		//means this is an empty tree 
 		m_root = new Node<T>( entry);
-		cout<<"Initiated a Tree!\n";
+		cout<<"Initiated a Tree!\nHead: "<<m_root->get_data().num_ssn()<<endl;
 		++m_active;
 		return;
 	}	
 	Node<T>* cursor = m_root;
-	bool at_end = false;
 	while(!(cursor->is_leaf())){
 	
 		if(entry.num_ssn() < cursor->get_data().num_ssn() && cursor->get_left_ptr()){
-		 cursor=cursor->get_left_ptr(); 	
-		} else if (entry.num_ssn() > cursor->num_ssn() && cursor->get_right_ptr()) {
+		 	cursor= cursor->get_left_ptr(); 	
+		} else if (entry.num_ssn() > cursor->get_data().num_ssn() && cursor->get_right_ptr()) {
 		 cursor=cursor->get_right_ptr();
 		} else {	
 	
 		if(entry.num_ssn() < cursor->get_data().num_ssn() && !(cursor->get_left_ptr()))
 		{
-				cursor->set_left_ptr(node_new(entry));
+				Node<T>* insert_node = node_new(entry);
+				cursor->set_left_link(insert_node);
 				++m_active;
 				return;
 				}
 		if(entry.num_ssn() > cursor->get_data().num_ssn() && !(cursor->get_right_ptr())){
-				cursor->set_right_ptr(node_new(entry));
+				cursor->set_right_link(node_new(entry));
 				++m_active;
 				return;
 				}
 		}
 	}
 	//while loop will stop when it reaches the end. then we insert to left or right
-	if(entry.num_ssn() < cursor->get_data().num_ssn()) {cursor->set_left_link();return;}
-	if(entry.num_ssn() > cursor->get_data().num_ssn()) {cursor->set_right_link();return;}
+	if(entry.num_ssn() < cursor->get_data().num_ssn()) {cursor->set_left_link(node_new(entry));return;}
+	if(entry.num_ssn() > cursor->get_data().num_ssn()) {cursor->set_right_link(node_new(entry));return;}
 	if(entry.num_ssn() > cursor->get_data().num_ssn()) return;
 }
 
@@ -78,5 +82,11 @@ void BST<T>::insert(const T& entry){
 
 int main(){
 	BST<Student> tree;
+	
+	for(int x=0;x<10;++x){
+		Student input;
+		tree.insert(input);
+	}
+	tree.display();
 
 }

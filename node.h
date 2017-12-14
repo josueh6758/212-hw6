@@ -5,7 +5,7 @@ using namespace std;
 
 template<class T>
    struct Node {
-     Node(const T& v) : m_val(v), m_act(true), m_left(0), m_right(0) {}    
+     Node( T& v) : m_val(v), m_act(true), m_left(0), m_right(0) {}    
      bool is_active(){return m_act;}
      T& get_data(){return m_val;}
      Node<T>* get_left_ptr(){return m_left;}
@@ -38,13 +38,22 @@ Node<T>* node_new(T& entry){
 	return node_ptr;
 }
 
+template<class T>
+void node_print(Node<T>* root){
+	if(root==NULL){cout<<"END"<<endl;return;}
+	cout<< "Im in: "<<root->get_data().num_ssn()<<endl;
+	node_print(root->get_left_ptr());
+	
+	node_print(root->get_right_ptr());
+
+}
 
 template<class T, class process>
 void node_pre_order(process f, Node<T>* root_ptr){
 	if(root_ptr!=0){
 	f(root_ptr);
-	in_order(f,root_ptr->get_left_ptr());
-	in_order(f,root_ptr->get_right_ptr());
+	node_pre_order(f,root_ptr->get_left_ptr());
+	node_pre_order(f,root_ptr->get_right_ptr());
 	}
 }
 
@@ -60,8 +69,8 @@ void node_in_order(process f, Node<T>* root_ptr){
 template<class T, class process>
 void node_post_order(process f, Node<T>* root_ptr){
 	if(root_ptr!=0){
-	in_order(f,root_ptr->get_left_ptr());
-	in_order(f,root_ptr->get_right_ptr());
+	node_post_order(f,root_ptr->get_left_ptr());
+	node_post_order(f,root_ptr->get_right_ptr());
 	f(root_ptr);
 	}
 }
