@@ -10,10 +10,10 @@ template<class T>
      BST(const BST&);
      void operator=(const BST&);
      //~BST();
-
+     Node<T>* tree_search(T&);
      bool remove(const T&);
      void insert(const T&);
-     bool is_member(const T&) const;
+     bool is_member(T&) const;
      long size() const { return m_active; }
      void compress();  // removed all marked nodes.
      //Bag<T> sort() const; // produce a sorted Bag.
@@ -23,6 +23,42 @@ template<class T>
      long  m_active;   // count of active nodes.
      long  m_inactive; // count of inactive nodes.  
        };
+
+template<class T>
+Node<T>* tree_search(T& student)
+{
+ Node<T>* cursor = m_root;
+  //int cursor_ssn = cursor.get_data().num_ssn()
+  if(student.num_ssn() == cursor.get_data().num_ssn())
+  {
+      return cursor;
+  }
+  else if (student.num_ssn() < cursor.get_data().num_ssn())
+  {
+      Node<T>* cur;
+      cur = cur->get_right_link();
+      tree_search(cur->get_data())
+  }
+  else if (student.num_ssn() > cursor.get_data().num_ssn())
+  {
+      Node<T>* cur;
+      cur = cur->get_right_link();
+      tree_search(cur->get_data())
+  }
+    return cursor;
+}
+
+
+template<class T>
+//why is this const if we're changing it's bool value
+bool remove(T& student )
+{
+    //pre-condition: takes in object pointer by reference
+    //post-condition: sets node to unactive
+    
+    //go through the tree search, return pointer of the node, get m_act, and set it to false to disable the node
+    tree_search(student)->is_active() = false;
+}
 
 template<class T>
 int compress(Node<T>*  head_ptr)
@@ -100,7 +136,7 @@ int compress(Node<T>*  head_ptr)
 
 
 template<class T>
-bool BST<T>::is_member(const T& student) const{
+bool BST<T>::is_member(T& student) const{
 	Node<T>* cursor = m_root;
 	do{
 	if(cursor->get_data().num_ssn()==student.num_ssn()) return true;
@@ -143,14 +179,22 @@ void BST<T>::insert(const T& entry){
 		}
 	}
 	//while loop will stop when it reaches the end. then we insert to left or right
-	if(entry.num_ssn() < cursor->get_data().num_ssn()) {cursor->set_left_link();return;}
-	if(entry.num_ssn() > cursor->get_data().num_ssn()) {cursor->set_right_link();return;}
-	if(entry.num_ssn() > cursor->get_data().num_ssn()) return;
+    if(entry.num_ssn() < cursor->get_data().num_ssn()) {cursor->set_left_link(node_new(entry));return;}
+    if(entry.num_ssn() > cursor->get_data().num_ssn()) {cursor->set_right_link(node_new(entry));return;}
+    if(entry.num_ssn() > cursor->get_data().num_ssn()) return;
 }
 
 
 
 int main(){
 	BST<Student> tree;
+    for(int i=0; i < 10; i++) {
+        Student entry;
+        node_new(entry);
+        tree.insert(entry);
+        //cout << node_new(entry)->get_data().num_ssn() << endl;
+        cout << node_new(entry)->get_data().num_ssn() << endl;
+    }
+    
 
 }

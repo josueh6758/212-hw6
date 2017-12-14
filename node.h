@@ -1,6 +1,8 @@
 #ifndef node_h
 #define node_h
 #include<iostream>
+#include "student.h"
+
 using namespace std;
 
 template<class T>
@@ -27,7 +29,7 @@ template<class T>
 
 
 template<class T>
-Node<T>* node_new(T& entry){
+Node<T>* node_new( T& entry){
 /* pre-condition:  i want to create a new node and return a pointer to this node.
    process: 	   return a pointer to a new node.
 */ 
