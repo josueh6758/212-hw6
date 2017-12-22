@@ -7,7 +7,7 @@ using namespace std;
 
 template<class T>
    struct Node {
-     Node(const T& v) : m_val(v), m_act(true), m_left(0), m_right(0) {}    
+     Node(const T& v) : m_val(v), m_act(true), m_left(0), m_right(0) {}
      bool is_active(){return m_act;}
      T& get_data(){return m_val;}
      Node<T>* get_left_ptr(){return m_left;}
@@ -29,7 +29,7 @@ template<class T>
 
 
 template<class T>
-Node<T>* node_new( T& entry){
+Node<T>* node_new(const T& entry){
 /* pre-condition:  i want to create a new node and return a pointer to this node.
    process: 	   return a pointer to a new node.
 */ 

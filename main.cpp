@@ -1,4 +1,4 @@
-#include<iostream>
+ #include<iostream>
 #include"node.h"
 #include"student.h"
 using namespace std;
@@ -6,7 +6,7 @@ using namespace std;
 template<class T>
    class BST {
    public:
-     BST(): m_root(0) {}
+     BST(): m_root(0), m_cursor(0) {}
      BST(const BST&);
      void operator=(const BST&);
      //~BST();
@@ -17,9 +17,13 @@ template<class T>
      long size() const { return m_active; }
      void compress();  // removed all marked nodes.
      //Bag<T> sort() const; // produce a sorted Bag.
+     T& get() {return m_cursor->get_data();}
+     void operator ++() {m_cursor->get_left_ptr();}
+       
 
    private:
      Node<T>* m_root;
+     Node<T>* m_cursor;
      long  m_active;   // count of active nodes.
      long  m_inactive; // count of inactive nodes.  
        };
@@ -161,18 +165,18 @@ void BST<T>::insert(const T& entry){
 	
 		if(entry.num_ssn() < cursor->get_data().num_ssn() && cursor->get_left_ptr()){
 		 cursor=cursor->get_left_ptr(); 	
-		} else if (entry.num_ssn() > cursor->num_ssn() && cursor->get_right_ptr()) {
+		} else if (entry.num_ssn() > cursor->get_data().num_ssn() && cursor->get_right_ptr()) {
 		 cursor=cursor->get_right_ptr();
 		} else {	
 	
 		if(entry.num_ssn() < cursor->get_data().num_ssn() && !(cursor->get_left_ptr()))
 		{
-				cursor->set_left_ptr(node_new(entry));
+				cursor->set_left_link(node_new(entry));
 				++m_active;
 				return;
 				}
 		if(entry.num_ssn() > cursor->get_data().num_ssn() && !(cursor->get_right_ptr())){
-				cursor->set_right_ptr(node_new(entry));
+				cursor->set_right_link(node_new(entry));
 				++m_active;
 				return;
 				}
@@ -188,6 +192,7 @@ void BST<T>::insert(const T& entry){
 
 int main(){
 	BST<Student> tree;
+    
     for(int i=0; i < 10; i++) {
         Student entry;
         node_new(entry);
@@ -195,6 +200,24 @@ int main(){
         //cout << node_new(entry)->get_data().num_ssn() << endl;
         cout << node_new(entry)->get_data().num_ssn() << endl;
     }
+    
+    BST<Student> tree2;
+    for(int i=0; i < tree.size(); i++) {
+       //cout << node_new(tree.get())->get_data().num_ssn() << endl;
+       //tree2.insert(node_new(tree.get()));
+       tree2.insert(tree.get());
+        ++tree;
+//      cout << node_new(tree.get())->get_data().num_ssn() << endl;
+    }
+    
+    
+//    for(int i=0; i < 10; i++) {
+//        Student entry;
+//        node_new(entry);
+//        tree2.insert(entry);
+//        //cout << node_new(entry)->get_data().num_ssn() << endl;
+//        cout << node_new(entry)->get_data().num_ssn() << endl;
+//    }
     
 
 }
