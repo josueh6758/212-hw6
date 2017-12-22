@@ -72,11 +72,11 @@ void BST<T>::remove(T& student )
 {
     //pre-condition: takes in object pointer by reference
     //post-condition: sets node to unactive
-    if (BST<T>::tree_search(student) && node_new(student)->is_active()) {
-        node_new(student)->is_unactive();
-    } else {
-        return;
-    }
+    BST<T>::tree_search(student)->is_unactive();
+    cout << "student node is unactive in remove(): " << student.num_ssn() << endl;
+    //needs check to see if m_act is false;
+    return;
+   
 }
 
 template<class T>
