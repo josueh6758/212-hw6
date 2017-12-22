@@ -22,15 +22,16 @@ public:
     //~BST();
     Node<T>* tree_search(T&);
     void display();
-    bool remove(const T&);
+    void remove(T&);
     void insert( T&);
     bool is_member(const T&) const;
     long size() const { return m_active; }
-    void compress();  // removed all marked nodes.
+    int compress(Node<T>*);  // removed all marked nodes.
     //Bag<T> sort() const; // produce a sorted Bag.
     T& get() {return m_cursor->get_data();}
     void operator ++() {m_cursor->get_left_ptr();}
     bool is_member(T&) const;
+    Node<T>* get_m_root() {return m_root;}
     
     
 private:
@@ -41,7 +42,7 @@ private:
 };
 
 template<class T>
-Node<T>* BST<T>:: tree_search(T& student)
+Node<T>* BST<T>::tree_search(T& student)
 {
     Node<T>* cursor = m_root;
     //int cursor_ssn = cursor.get_data().num_ssn()
@@ -52,13 +53,13 @@ Node<T>* BST<T>:: tree_search(T& student)
     else if (student.num_ssn() < cursor->get_data().num_ssn())
     {
         Node<T>* cur;
-        cur = cur->get_right_link();
+        cur = cur->get_right_ptr();
         tree_search(cur->get_data());
     }
     else if (student.num_ssn() > cursor->get_data().num_ssn())
     {
         Node<T>* cur;
-        cur = cur->get_right_link();
+        cur = cur->get_right_ptr();
         tree_search(cur->get_data());
     }
     return cursor;
@@ -66,43 +67,47 @@ Node<T>* BST<T>:: tree_search(T& student)
 
 
 template<class T>
-bool remove(T& student )
+void BST<T>::remove(T& student )
 {
     //pre-condition: takes in object pointer by reference
     //post-condition: sets node to unactive
-    tree_search(student)->is_active() = false;
+    if (BST<T>::tree_search(student) && node_new(student)->is_active()) {
+        node_new(student)->is_unactive();
+    } else {
+        return;
+    }
 }
 
 template<class T>
-int compress(Node<T>*  head_ptr)
+int BST<T>::compress(Node<T>*  head_ptr)
 {
     //CASE 1 - non-existent
     if(!head_ptr) return 0;
     int count = 0;
-    count = compress(head_ptr->get_left_link());
-    count = compress(head_ptr->get_right_link());
+    count = compress(head_ptr->get_left_ptr());
+    count = compress(head_ptr->get_right_ptr());
     
     //CASE 2 - active
     if(*head_ptr->m_act)
     {
-        count = compress(head_ptr->get_left_link());
-        count = compress(head_ptr->get_right_link());
+        count = compress(head_ptr->get_left_ptr());
+        count = compress(head_ptr->get_right_ptr());
         count += count;
         return count;
     }
     //CASE 3 - unactive
     else {
         //CASE 1 - Sub-trees exist, go left, hard right
-        if(head_ptr->get_right_link() && head_ptr->get_left_link())
+        if(head_ptr->get_right_ptr() && head_ptr->get_left_ptr())
         {
             Node<T>* cur_ptr = head_ptr;
-            Node<T>* left_ptr = head_ptr->get_left_link();
-            Node<T>* right_ptr = head_ptr->get_right_link();
+            Node<T>* left_ptr = head_ptr->get_left_ptr();
+            Node<T>* right_ptr = head_ptr->get_right_ptr();
             cur_ptr = head_ptr->get_left_link();
-            while(cur_ptr->get_right_link())
+            while(cur_ptr->get_right_ptr())
             {
-                cur_ptr = cur_ptr->get_right_link();
-                left_ptr = left_ptr->get_left_link();
+                cur_ptr = cur_ptr->get_right_ptr();
+                left_ptr = left_ptr->get_left_ptr();
             }
             //CASE 1.1 - check if right subtree has left child
             if(right_ptr->get_left_link())
@@ -113,7 +118,7 @@ int compress(Node<T>*  head_ptr)
             return ++count;
         }
         //CASE 2 - only left sub-trees
-        else if(!head_ptr->get_right_link())
+        else if(!head_ptr->get_right_ptr())
         {
             Node<T>* cur_ptr;
             cur_ptr = head_ptr;
@@ -130,9 +135,9 @@ int compress(Node<T>*  head_ptr)
         {
             Node<T>* cur_ptr;
             cur_ptr = head_ptr;
-            while(cur_ptr->get_right_link())
+            while(cur_ptr->get_right_ptr())
             {
-                cur_ptr = cur_ptr->get_right_link();
+                cur_ptr = cur_ptr->get_right_ptr();
             }
             delete_right(head_ptr);
             ++count;
@@ -142,6 +147,7 @@ int compress(Node<T>*  head_ptr)
         else
         {
             cout << "something is wrong" << endl;
+            return 0;
         }
     }
     
@@ -178,13 +184,13 @@ void BST<T>::insert( T& entry){
     }
     Node<T>* cursor = m_root;
     while(!(cursor->is_leaf())){
-        
+        //if left and right sub-tree exist
         if(entry.num_ssn() < cursor->get_data().num_ssn() && cursor->get_left_ptr()){
             cursor= cursor->get_left_ptr();
         } else if (entry.num_ssn() > cursor->get_data().num_ssn() && cursor->get_right_ptr()) {
             cursor=cursor->get_right_ptr();
         } else {
-            
+            //if left sub-tree DNE, make left subtree
             if(entry.num_ssn() < cursor->get_data().num_ssn() && !(cursor->get_left_ptr()))
             {
                 Node<T>* insert_node = node_new(entry);
@@ -192,6 +198,7 @@ void BST<T>::insert( T& entry){
                 ++m_active;
                 return;
             }
+            //if right sub-tree DNE, make right subtree
             if(entry.num_ssn() > cursor->get_data().num_ssn() && !(cursor->get_right_ptr())){
                 cursor->set_right_link(node_new(entry));
                 ++m_active;
@@ -199,7 +206,7 @@ void BST<T>::insert( T& entry){
             }
         }
     }
-    //while loop will stop when it reaches the end. then we insert to left or right
+    //while loop will stop when it reaches the end. then we insert to left or right. For the first two cases
     if(entry.num_ssn() < cursor->get_data().num_ssn()) {cursor->set_left_link(node_new(entry));return;}
     if(entry.num_ssn() > cursor->get_data().num_ssn()) {cursor->set_right_link(node_new(entry));return;}
     if(entry.num_ssn() > cursor->get_data().num_ssn()) return;

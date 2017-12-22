@@ -9,6 +9,7 @@ template<class T>
    struct Node {
      Node(T& v) : m_val(v), m_act(true), m_left(0), m_right(0) {}
      bool is_active(){return m_act;}
+     bool is_unactive(){return m_act == false;}
      T& get_data(){return m_val;}
      Node<T>* get_left_ptr(){return m_left;}
      Node<T>* get_right_ptr(){return m_right;}
