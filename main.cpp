@@ -13,9 +13,11 @@ int main(){
        // cout << node_new(entry)->get_data().num_ssn() << endl;
         cout << entry.num_ssn() << endl;
     }
+    tree.begin();
     for(int i=0; i < 5; i++) {
         tree.remove(tree.get_m_root()->get_data());
     }
+     cout << "remove" << endl;
      cout << tree.get().num_ssn() << endl;
     
 //    for(int i=0; i < tree.size(); i++) {

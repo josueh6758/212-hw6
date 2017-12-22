@@ -32,6 +32,7 @@ public:
     void operator ++() {m_cursor->get_left_ptr();}
     bool is_member(T&) const;
     Node<T>* get_m_root() {return m_root;}
+    void begin() {m_cursor=m_root;}
     
     
 private:
