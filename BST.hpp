@@ -18,28 +18,41 @@ class BST {
 public:
     BST(): m_root(0), m_cursor(0) {}
     BST(const BST&);
-    void operator=(const BST&);
+   // void operator=(const BST&);
     //~BST();
     Node<T>* tree_search(T&);
     void display();
+    void display_act();
+    void display_inact();
     void remove(T&);
     void insert( T&);
     bool is_member(const T&) const;
-    long size() const { return m_active; }
+    //size should return all active and unactive nodes
+    int size() const { return size_act() + size_inact(); }
     int compress(Node<T>*);  // removed all marked nodes.
     //Bag<T> sort() const; // produce a sorted Bag.
     T& get() {return m_cursor->get_data();}
-    void operator ++() {m_cursor->get_left_ptr();}
+    //needs to be changed
+    void operator ++() {return m_cursor->get_left_ptr();}
+    void operator = (Node<T>* m_cursor) {return this->get_ptr() = m_cursor; }
     bool is_member(T&) const;
-    Node<T>* get_m_root() {return m_root;}
     void begin() {m_cursor=m_root;}
+    //for compress function
+    void delete_right();
+    void delete_left();
+    //setters/getters
+    int size_act() {return m_active;}
+    int size_inact() {return m_active == false;}
+    Node<T>* get_m_root() {return m_root;}
+    Node<T>* get_ptr() {return m_cursor;}
+    
     
     
 private:
     Node<T>* m_root;
     Node<T>* m_cursor;
-    long  m_active;   // count of active nodes.
-    long  m_inactive; // count of inactive nodes.
+    int  m_active = 0;   // count of active nodes.
+    
 };
 
 template<class T>
@@ -72,9 +85,13 @@ void BST<T>::remove(T& student )
 {
     //pre-condition: takes in object pointer by reference
     //post-condition: sets node to unactive
-    BST<T>::tree_search(student)->is_unactive();
-    cout << "student node is unactive in remove(): " << student.num_ssn() << endl;
-    //needs check to see if m_act is false;
+    BST<T>::tree_search(student)->is_inactive();
+    cout << "student node is suppose to be inactive: " << student.num_ssn() << endl;
+    //todo: check to see if student node's m_act is false;
+    cout << "m_active: " << m_active << endl;
+    cout << "m_inactive: " << m_active == false << endl;
+    --m_active;
+    ++m_inactive;
     return;
    
 }
@@ -170,6 +187,29 @@ void BST<T>::display(){
     if(m_root==0){ cout<<"empty tree!"<<endl; return;}
     node_print(m_root);
 }
+
+template<class T>
+void BST<T>::display_act(){
+    "This is the tree:\n";
+    if(m_root==0){ cout<<"empty tree!"<<endl; return;}
+    if(m_root->is_active()== true) {
+         node_print(m_root);
+    } else {
+        return;
+    }
+   
+}
+template<class T>
+void BST<T>::display_inact(){
+    "This is the tree:\n";
+    if(m_root==0){ cout<<"empty tree!"<<endl; return;}
+    if(m_root->is_inactive()== false) {
+        node_print(m_root);
+    } else {
+        return;
+    }
+}
+
 
 
 
