@@ -18,17 +18,17 @@ class BST {
 public:
     BST(): m_root(0), m_cursor(0) {}
     BST(const BST&);
-   // void operator=(const BST&);
+    // void operator=(const BST&);
     //~BST();
     Node<T>* tree_search(T&);
     void display();
-    void display_act();
-    void display_inact();
+    void display_act_nodes();
+    void display_inact_nodes();
     void remove(T&);
     void insert( T&);
     bool is_member(const T&) const;
     //size should return all active and unactive nodes
-    int size() { return size_act() + size_inact(); }
+    int size() { return size_act(); }
     int compress(Node<T>*);  // removed all marked nodes.
     //Bag<T> sort() const; // produce a sorted Bag.
     T& get() {return m_cursor->get_data();}
@@ -37,14 +37,12 @@ public:
     void operator = (Node<T>* m_cursor) {return this->get_ptr() = m_cursor; }
     bool is_member(T&) const;
     void begin() {m_cursor=m_root;}
-    //for compress function
-    void delete_right();
-    void delete_left();
-    //setters/getters
+    
     int size_act() {return m_active;}
-    int size_inact() {return m_active == false;}
+    int size_inact() {return m_inactive;}
     Node<T>* get_m_root() {return m_root;}
     Node<T>* get_ptr() {return m_cursor;}
+   
     
     
     
@@ -90,8 +88,8 @@ void BST<T>::remove(T& student )
     cout << "student node is suppose to be inactive: " << student.num_ssn() << endl;
     //todo: check to see if student node's m_act is false;
     cout << "m_active: " << m_active << endl;
-    m_active == false;
-    cout << "m_inactive: " << m_active  << endl;
+    m_active = false;
+    cout << "m_inactive: " << m_inactive  << endl;
     --m_active;
     ++m_inactive;
     return;
@@ -108,7 +106,7 @@ int BST<T>::compress(Node<T>*  head_ptr)
     count = compress(head_ptr->get_right_ptr());
     
     //CASE 2 - active
-    if(*head_ptr->m_act)
+    if(head_ptr->m_act)
     {
         count = compress(head_ptr->get_left_ptr());
         count = compress(head_ptr->get_right_ptr());
@@ -123,16 +121,16 @@ int BST<T>::compress(Node<T>*  head_ptr)
             Node<T>* cur_ptr = head_ptr;
             Node<T>* left_ptr = head_ptr->get_left_ptr();
             Node<T>* right_ptr = head_ptr->get_right_ptr();
-            cur_ptr = head_ptr->get_left_link();
+            cur_ptr = head_ptr->get_left_ptr();
             while(cur_ptr->get_right_ptr())
             {
                 cur_ptr = cur_ptr->get_right_ptr();
                 left_ptr = left_ptr->get_left_ptr();
             }
             //CASE 1.1 - check if right subtree has left child
-            if(right_ptr->get_left_link())
+            if(right_ptr->get_left_ptr())
             {
-                left_ptr->set_right_link(right_ptr->get_left_link());
+                left_ptr->set_right_link(right_ptr->get_left_ptr());
             }
             
             return ++count;
@@ -142,16 +140,16 @@ int BST<T>::compress(Node<T>*  head_ptr)
         {
             Node<T>* cur_ptr;
             cur_ptr = head_ptr;
-            while(cur_ptr->get_left_link())
+            while(cur_ptr->get_left_ptr())
             {
-                cur_ptr = cur_ptr->get_left_link();
+                cur_ptr = cur_ptr->get_left_ptr();
             }
-            delete_left(head_ptr);
+            delete cur_ptr;
             ++count;
             return count;
         }
         //CASE 3 - only right sub-trees
-        else if(!(head_ptr->get_left_link()))
+        else if(!(head_ptr->get_left_ptr()))
         {
             Node<T>* cur_ptr;
             cur_ptr = head_ptr;
@@ -159,7 +157,7 @@ int BST<T>::compress(Node<T>*  head_ptr)
             {
                 cur_ptr = cur_ptr->get_right_ptr();
             }
-            delete_right(head_ptr);
+            delete cur_ptr;
             ++count;
             return count;
             
@@ -187,7 +185,7 @@ template<class T>
 void BST<T>::display(){
     "This is the tree:\n";
     if(m_root==0){ cout<<"empty tree!"<<endl; return;}
-    if(m_root->is_active()== true) {
+    if(m_root->is_active()) {
         cout << "---------display active nodes: " << endl;
         //shouldn't just be m_root
          node_print(m_root);
@@ -195,15 +193,33 @@ void BST<T>::display(){
         cout << "---------display inactive nodes: " << endl;
         node_print(m_root);
     }
-   
 }
+
 template<class T>
-void BST<T>::display_inact(){
+void BST<T>::display_act_nodes(){
     "This is the tree:\n";
     if(m_root==0){ cout<<"empty tree!"<<endl; return;}
-    if(m_root->is_active()== false) {
+    if(m_root->is_active()) {
+        cout << "---------display active nodes: " << endl;
+        //shouldn't just be m_root
         node_print(m_root);
     } else {
+        //case:(!(m_root->is_active()))
+        cout << "---------display inactive nodes: " << endl;
+        node_print(m_root);
+    }
+}
+
+
+
+template<class T>
+void BST<T>::display_inact_nodes(){
+    "This is inact nodes:\n";
+    if(m_root==0){ cout<<"empty tree!"<<endl; return;}
+    if(!(m_root->is_active())) {
+        node_print(m_root);
+    } else {
+        cout << "all act nodes" << endl;
         return;
     }
 }
@@ -218,6 +234,7 @@ void BST<T>::insert( T& entry){
         //means this is an empty tree
         m_root = new Node<T>( entry);
         cout<<"Initiated a Tree!\nHead: "<<m_root->get_data().num_ssn()<<endl;
+        cout << "m_active: " << m_active << endl;
         ++m_active;
         return;
     }
@@ -234,12 +251,14 @@ void BST<T>::insert( T& entry){
             {
                 Node<T>* insert_node = node_new(entry);
                 cursor->set_left_link(insert_node);
+                cout << "m_active: " << m_active << endl;
                 ++m_active;
                 return;
             }
             //if right sub-tree DNE, make right subtree
             if(entry.num_ssn() > cursor->get_data().num_ssn() && !(cursor->get_right_ptr())){
                 cursor->set_right_link(node_new(entry));
+                cout << "m_active: " << m_active << endl;
                 ++m_active;
                 return;
             }

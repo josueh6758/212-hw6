@@ -5,6 +5,7 @@
 using namespace std;
 
 int main(){
+    srand(time(NULL));
     //---Intiate tree, add 10 students, print ssn
 	BST<Student> tree;
     cout << "tree size before insertion: " << tree.size() << endl;
@@ -12,6 +13,7 @@ int main(){
         Student entry;
         tree.insert(entry);
         cout << entry.num_ssn() << endl;
+        
     }
     
     //---Print tree after insertion
@@ -27,12 +29,16 @@ int main(){
     //-----Print tree's active and inactive nodes after remove()
     tree.begin();
     cout << "tree size: " << tree.size() << endl;
+    tree.display_inact_nodes();
     
     //check if head ptr, which has gone through remove() to be set is inactive, to be active or inactive
     
     //cout << "student node, either act or in-act: " << tree.get_m_root()->m_act() << endl;
     
     //-----should print out inactive nodes (head node) BUT it doesn't:
+    tree.display();
+    tree.compress(tree.get_m_root());
+    cout << "tree after compress-------------" << endl;
     tree.display();
     
     
