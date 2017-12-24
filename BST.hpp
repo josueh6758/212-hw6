@@ -22,8 +22,7 @@ public:
     //~BST();
     void display();
     void display_act_nodes();
-    void display_inact_nodes();
-    void remove(T&);
+    void remove(T&, Node<T>*);
     void insert( T&);
     bool is_member(const T&) const;
     //size should return all active and unactive nodes
@@ -69,12 +68,15 @@ bool BST<T>::operator ==(BST<T>& tree2){
 
 
 template<class T>
-void BST<T>::remove(T& student )
+void BST<T>::remove(T& student, Node<T>* ptr )
 {
     //pre-condition: takes in object pointer by reference
     //post-condition: sets node to unactive
     if (BST<T>::is_member(student)) {
          cout << "student node is suppose to be inactive: " << student.num_ssn() << endl;
+    //TODO: set student's node to inactive:
+        ptr->m_act = false;
+        
         --m_active;
         ++m_inactive;
     }
