@@ -76,13 +76,13 @@ void BST<T>::remove(T& student, Node<T>* ptr )
          cout << "student node is suppose to be inactive: " << student.num_ssn() << endl;
     //TODO: set student's node to inactive:
         ptr->m_act = false;
-        
         --m_active;
         ++m_inactive;
     }
     //todo: check to see if student node's m_act is false;
     cout << "m_active: " << m_active << endl;
     cout << "m_inactive: " << m_inactive  << endl;
+    cout << ptr->m_act << endl;
     return;
    
 }
@@ -180,7 +180,7 @@ template<class T>
 void BST<T>::display_act_nodes(){
     "This is the tree:\n";
     if(m_root==0){ cout<<"empty tree!"<<endl; return;}
-    if(m_root->is_active()) {
+    if(m_root->m_act()) {
         cout << "---------display active nodes: " << endl;
         //shouldn't just be m_root
         node_print(m_root);
