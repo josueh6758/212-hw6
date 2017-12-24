@@ -39,7 +39,9 @@ Node<T>* node_new(T& entry){
 template<class T>
 void node_print(Node<T>* root){
 	if(root==NULL){cout<<"END"<<endl;return;}
-	cout<< "Im in: "<<root->get_data().num_ssn()<<endl;
+	
+	if(root->m_act)cout<< "Im in: "<<root->get_data().num_ssn()<<endl;
+	else cout<<"IM DEACTIVATED BUT IM IN:"<< root->get_data().num_ssn()<<endl;
 	node_print(root->get_left_ptr());
 	
 	node_print(root->get_right_ptr());
