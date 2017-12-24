@@ -14,19 +14,20 @@ template<class T>
      void set_data(T& entry){m_val=entry;}
      void set_left_link(Node<T>* left){m_left=left;}
      void set_right_link(Node<T>* right){m_right=right;}
+     Node<T>* get_left_ptr(){return m_left;}
+     Node<T>* get_right_ptr(){return m_right;}
      //const members
      const T& get_data() const{return m_val;}
      const  Node<T>* get_left_ptr() const {return m_left;}
      const Node<T>* get_right_ptr() const {return m_right;}
-     //duplicate
-     Node<T>* get_left_ptr(){return m_left;}
-     Node<T>* get_right_ptr(){return m_right;}
+
      const bool is_leaf(){return((m_left==0)&&(m_right==0));}	    
      //variables
      T        m_val; 
      bool     m_act;
      Node<T>* m_left;  // pointer to the left subtree. 
      Node<T>* m_right; // pointer to the right subtree.
+     bool node_equality(Node<T>*, Node<T>*, bool& );
    };
 
 
@@ -43,40 +44,41 @@ Node<T>* node_new(T& entry){
 template<class T>
 void node_print(Node<T>* root){
 	if(root==NULL){cout<<"END"<<endl;return;}
-	cout<< "Im in: "<<root->get_data().num_ssn()<<endl;
+	
+	if(root->m_act)cout<< "Im in: "<<root->get_data().num_ssn()<<endl;
+	else cout<<"IM DEACTIVATED BUT IM IN:"<< root->get_data().num_ssn()<<endl;
 	node_print(root->get_left_ptr());
 	
 	node_print(root->get_right_ptr());
 
 }
 
-template<class T, class process>
-void node_pre_order(process f, Node<T>* root_ptr){
-	if(root_ptr!=0){
-	f(root_ptr);
-	node_pre_order(f,root_ptr->get_left_ptr());
-	node_pre_order(f,root_ptr->get_right_ptr());
-	}
+template<class T>
+ Node<T>* node_search(Node<T>* root,const T& student){
+Node<T>* cursor=root;
+while(cursor!=0)//keep searching till we fall off the tree
+{
+	if(cursor->get_data().num_ssn() == student.num_ssn()) return cursor;
+	if(cursor->get_data().num_ssn() > student.num_ssn()) cursor= cursor->get_left_ptr();
+	else {cursor = cursor->get_right_ptr();}
+
+}
+return 0;//if we havent found anything then we'll return the 0 pointer aka null
+
 }
 
-template<class T, class process>
-void node_in_order(process f, Node<T>* root_ptr){
-	if(root_ptr!=0){
-	in_order(f,root_ptr->get_left_ptr());
-	f(root_ptr);
-	in_order(f,root_ptr->get_right_ptr());
-	}
-}
 
-template<class T, class process>
-void node_post_order(process f, Node<T>* root_ptr){
-	if(root_ptr!=0){
-	node_post_order(f,root_ptr->get_left_ptr());
-	node_post_order(f,root_ptr->get_right_ptr());
-	f(root_ptr);
+template<class T>
+bool node_equality(Node<T>* tree_one,Node<T>* tree_two, bool& equality){
+	/*this checks if two trees are equal tree one will traverse and tree two is just to
+	 * have access to the other tree to search*/
+	if(!(node_search(tree_two, tree_one->get_data() ))){
+		return(equality=false);
 	}
+	node_equality(tree_one->get_left_ptr(),tree_two,equality);
+	node_equality(tree_one->get_right_ptr(),tree_two,equality);
+    return true;
 }
-
 
 
 #endif

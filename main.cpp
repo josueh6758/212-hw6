@@ -4,10 +4,12 @@
 #include "BST.hpp"
 using namespace std;
 
+
 int main(){
     srand(time(NULL));
     //---Intiate tree, add 10 students, print ssn
 	BST<Student> tree;
+
     cout << "tree size before insertion: " << tree.size() << endl;
     for(int i=0; i < 10; i++) {
         Student entry;
@@ -18,25 +20,21 @@ int main(){
     
     //---Print tree after insertion
     tree.begin();
-    //not sure why it's coming out as 4
     cout << "tree size before remove: " << tree.size() << endl;
+    cout << "tree after insertion: " << endl;
     tree.display();
     
     //----Set head pointer to inactive with remove()
     tree.remove(tree.get_m_root()->get_data());
-     cout << "remove------" << endl;
-    
+    cout << "after calling remove on head node. Only active/inactive  nodes below. head node should be unactive---" << endl;
     //-----Print tree's active and inactive nodes after remove()
     tree.begin();
+    tree.display_act_nodes();
     cout << "tree size: " << tree.size() << endl;
-    tree.display_inact_nodes();
     
-    //check if head ptr, which has gone through remove() to be set is inactive, to be active or inactive
     
-    //cout << "student node, either act or in-act: " << tree.get_m_root()->m_act() << endl;
     
-    //-----should print out inactive nodes (head node) BUT it doesn't:
-    tree.display();
+    //-------Todo: run compress on tree
     tree.compress(tree.get_m_root());
     cout << "tree after compress-------------" << endl;
     tree.display();
@@ -46,7 +44,19 @@ int main(){
     
     
     
-    //-------Todo: run compress on tree
     
+  
+    
+
+//
+//    for(int x=0;x<10;++x){
+//        Student input;
+//        tree.insert(input);
+//    }
+//    Student find_me;
+//    tree.insert(find_me);
+//    tree.display();
+//    if(tree.is_member(find_me)) cout<<"he in here!\n";
+//    else cout<< "he not in here!\n";
 
 }
