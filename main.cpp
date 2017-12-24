@@ -17,12 +17,28 @@ template<class T>
      long size() const { return m_active; }
      void compress();  // removed all marked nodes.
      //Bag<T> sort() const; // produce a sorted Bag.
-
+     bool operator ==(BST&);
    private:
      Node<T>* m_root;
      long  m_active;   // count of active nodes.
      long  m_inactive; // count of inactive nodes.  
        };
+
+template<class T>
+bool BST<T>::operator ==(BST<T>& tree2){
+cout<<"checking for equality!...\n";
+if(m_active != tree2.m_active){ 
+	cout<<"tree sizes do not match!\n";
+	return false;
+}
+bool equality = true;//this will be true unless my func changes the value of this to false
+node_equality(m_root,tree2.m_root,equality);
+return equality;
+
+} 
+
+
+
 
 template<class T>
 void BST<T>::display(){
@@ -35,6 +51,7 @@ node_print(m_root);
 
 template<class T>
 bool BST<T>::is_member(const T& student) const{
+if(!(node_search(m_root,student))) return false;
 return true;
 }
 
@@ -75,7 +92,8 @@ void BST<T>::insert( T& entry){
 	//while loop will stop when it reaches the end. then we insert to left or right
 	if(entry.num_ssn() < cursor->get_data().num_ssn()) {cursor->set_left_link(node_new(entry));return;}
 	if(entry.num_ssn() > cursor->get_data().num_ssn()) {cursor->set_right_link(node_new(entry));return;}
-	if(entry.num_ssn() > cursor->get_data().num_ssn()) return;
+	//if(entry.num_ssn() > cursor->get_data().num_ssn()) return;
+
 }
 
 
@@ -87,6 +105,9 @@ int main(){
 		Student input;
 		tree.insert(input);
 	}
+	Student find_me;
+	tree.insert(find_me);
 	tree.display();
-
+	if(tree.is_member(find_me)) cout<<"he in here!\n";
+	else cout<< "he not in here!\n";
 }

@@ -26,8 +26,6 @@ template<class T>
    };
 
 
-
-
 template<class T>
 Node<T>* node_new(T& entry){
 /* pre-condition:  i want to create a new node and return a pointer to this node.
@@ -48,33 +46,31 @@ void node_print(Node<T>* root){
 
 }
 
-template<class T, class process>
-void node_pre_order(process f, Node<T>* root_ptr){
-	if(root_ptr!=0){
-	f(root_ptr);
-	node_pre_order(f,root_ptr->get_left_ptr());
-	node_pre_order(f,root_ptr->get_right_ptr());
-	}
+template<class T>
+ Node<T>* node_search(Node<T>* root,const T& student){
+Node<T>* cursor=root;
+while(cursor!=0)//keep searching till we fall off the tree
+{
+	if(cursor->get_data().num_ssn() == student.num_ssn()) return cursor;
+	if(cursor->get_data().num_ssn() > student.num_ssn()) cursor= cursor->get_left_ptr();
+	else {cursor = cursor->get_right_ptr();}
+
+}
+return 0;//if we havent found anything then we'll return the 0 pointer aka null
+
 }
 
-template<class T, class process>
-void node_in_order(process f, Node<T>* root_ptr){
-	if(root_ptr!=0){
-	in_order(f,root_ptr->get_left_ptr());
-	f(root_ptr);
-	in_order(f,root_ptr->get_right_ptr());
-	}
-}
 
-template<class T, class process>
-void node_post_order(process f, Node<T>* root_ptr){
-	if(root_ptr!=0){
-	node_post_order(f,root_ptr->get_left_ptr());
-	node_post_order(f,root_ptr->get_right_ptr());
-	f(root_ptr);
+template<class T>
+void node_equality(Node<T>* tree_one,Node<T>* tree_two, bool& equality){
+	/*this checks if two trees are equal tree one will traverse and tree two is just to
+	 * have access to the other tree to search*/
+	if(!(node_search(tree_two, tree_one->get_data() ))){
+		return(equality=false);
 	}
+	node_equality(tree_one->get_left_ptr(),tree_two,equality);
+	node_equality(tree_one->get_right_ptr(),tree_two,equality);
 }
-
 
 
 #endif
