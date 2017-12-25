@@ -6,7 +6,7 @@ using namespace std;
 
 
 int main(){
-    srand(time(NULL));
+    //srand(time(NULL));
     //---Intiate tree, add 10 students, print ssn
 	BST<Student> tree;
 
@@ -31,12 +31,11 @@ int main(){
     tree.begin();
     tree.display_act_nodes();
     cout << "tree size: " << tree.size() << endl;
-    
-    
-    
-    //-------Todo: run compress on tree
+
+    //-----Run compress on tree
     tree.compress(tree.get_m_root());
     cout << "tree after compress-------------" << endl;
+    tree.begin();
     tree.display();
     
     

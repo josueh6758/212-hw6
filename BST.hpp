@@ -82,7 +82,7 @@ void BST<T>::remove(T& student, Node<T>* ptr )
     //todo: check to see if student node's m_act is false;
     cout << "m_active: " << m_active << endl;
     cout << "m_inactive: " << m_inactive  << endl;
-    cout << ptr->m_act << endl;
+    cout << "ptr->m_act: " << ptr->m_act << endl;
     return;
    
 }
@@ -98,6 +98,7 @@ int BST<T>::compress(Node<T>*  head_ptr)
     
     //CASE 2 - active
     if(head_ptr->m_act)
+        //keep calling the recursion until it gets to an unactive node (see case 3)
     {
         count = compress(head_ptr->get_left_ptr());
         count = compress(head_ptr->get_right_ptr());
@@ -107,28 +108,51 @@ int BST<T>::compress(Node<T>*  head_ptr)
     //CASE 3 - unactive
     else {
         //CASE 1 - Sub-trees exist, go left, hard right
+        //head_ptr is the one we want to delete/swap data with
+        //head_ptr isn't necessarily the head of the whole tree, it's the bottom most unactive node after traversing through the tree
         if(head_ptr->get_right_ptr() && head_ptr->get_left_ptr())
         {
+            cout << "compress: case 1- inactive" << endl;
             Node<T>* cur_ptr = head_ptr;
             Node<T>* left_ptr = head_ptr->get_left_ptr();
             Node<T>* right_ptr = head_ptr->get_right_ptr();
             cur_ptr = head_ptr->get_left_ptr();
-            while(cur_ptr->get_right_ptr())
-            {
-                cur_ptr = cur_ptr->get_right_ptr();
-                left_ptr = left_ptr->get_left_ptr();
+            //cout << "before while loop" << endl;
+            if(cur_ptr->get_right_ptr()) {                while(cur_ptr->get_right_ptr())
+                {
+                    //cout << " in while loop" << endl;
+                    //----move right ptr to the bottom right
+                    cur_ptr = cur_ptr->get_right_ptr();
+                    //cout << " leaving while loop" << endl;
+                }
+                //----swap data, gotta make it redundant because can't assign directly
+                int head_ssn =  head_ptr->get_data().num_ssn();
+                cout << "head ssn before swap: " << head_ssn << endl;
+                int cur_ssn = cur_ptr->get_data().num_ssn();
+                head_ptr->get_data().num_ssn() = cur_ssn;
+                cout << "head ssn after swap: " <<  head_ssn << endl;
+                //----delete the bottom right ptr after data swap
+                delete cur_ptr;
+                //re-activate ptr
+                head_ptr->is_active() == true;
+                Node<T>* cur_ptr = head_ptr;
             }
+           
             //CASE 1.1 - check if right subtree has left child
             if(right_ptr->get_left_ptr())
             {
+                cout << "compress: case 1.1"<< count << endl;
                 left_ptr->set_right_link(right_ptr->get_left_ptr());
             }
+            ++count;
+            cout << "count in case 1: "<< count << endl;
             
-            return ++count;
+            return count;
         }
         //CASE 2 - onlym left sub-trees
         else if(!head_ptr->get_right_ptr())
         {
+            cout << "compress: case 2- left ST" << endl;
             Node<T>* cur_ptr;
             cur_ptr = head_ptr;
             while(cur_ptr->get_left_ptr())
@@ -142,6 +166,7 @@ int BST<T>::compress(Node<T>*  head_ptr)
         //CASE 3 - only right sub-trees
         else if(!(head_ptr->get_left_ptr()))
         {
+            cout << "compress: case 3- right ST" << endl;
             Node<T>* cur_ptr;
             cur_ptr = head_ptr;
             while(cur_ptr->get_right_ptr())
@@ -150,12 +175,13 @@ int BST<T>::compress(Node<T>*  head_ptr)
             }
             delete cur_ptr;
             ++count;
+            cout << "count: " << count << endl;
             return count;
             
         }
         else
         {
-            cout << "something is wrong" << endl;
+            cout << "compress: something is wrong" << endl;
             return 0;
         }
     }
@@ -174,6 +200,7 @@ void BST<T>::display(){
     "This is the tree:\n";
     if(m_root==0){ cout<<"empty tree!"<<endl; return;}
     node_print(m_root);
+    cout << "-------------------" << endl;
 }
 
 template<class T>
