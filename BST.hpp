@@ -126,7 +126,7 @@ int BST<T>::compress(Node<T>*  head_ptr)
             
             return ++count;
         }
-        //CASE 2 - only left sub-trees
+        //CASE 2 - onlym left sub-trees
         else if(!head_ptr->get_right_ptr())
         {
             Node<T>* cur_ptr;
@@ -180,14 +180,17 @@ template<class T>
 void BST<T>::display_act_nodes(){
     "This is the tree:\n";
     if(m_root==0){ cout<<"empty tree!"<<endl; return;}
-    if(m_root->m_act()) {
+    if(m_root->is_active()) {
         cout << "---------display active nodes: " << endl;
+       // cout << "active:-------------- " << m_root->is_active() << endl;
         //shouldn't just be m_root
         node_print(m_root);
+        cout << "--------------------- " << endl;
     } else {
         //case:(!(m_root->is_active()))
         cout << "---------display inactive nodes: " << endl;
         node_print(m_root);
+        cout << "--------------------- " << endl;
     }
 }
 

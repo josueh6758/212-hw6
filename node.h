@@ -8,7 +8,7 @@ using namespace std;
 template<class T>
    struct Node {
      Node(T& v) : m_val(v), m_act(true), m_left(0), m_right(0) {}
-     bool is_active(){return m_act = true;}
+     bool is_active(){return m_act;}
      bool is_inactive(){return m_act = false;}
      T& get_data(){return m_val;}
      void set_data(T& entry){m_val=entry;}
