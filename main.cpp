@@ -6,7 +6,7 @@ using namespace std;
 
 
 int main(){
-    //srand(time(NULL));
+    srand(time(NULL));
     //---Intiate tree, add 10 students, print ssn
 	BST<Student> tree;
 
@@ -15,7 +15,6 @@ int main(){
         Student entry;
         tree.insert(entry);
         cout << entry.num_ssn() << endl;
-        
     }
     
     //---Print tree after insertion
@@ -26,7 +25,7 @@ int main(){
     
     //----Set head pointer to inactive with remove()
     tree.remove(tree.get_m_root()->get_data(), tree.get_m_root());
-    cout << "after calling remove on head node. Only active/inactive  nodes below. head node should be unactive---" << endl;
+    cout << "After calling remove on head node. Only active/inactive nodes below. Head node should be unactive---" << endl;
     //-----Print tree's active and inactive nodes after remove()
     tree.begin();
     tree.display_act_nodes();

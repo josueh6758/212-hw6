@@ -80,10 +80,8 @@ void BST<T>::remove(T& student, Node<T>* ptr )
         --m_active;
         ++m_inactive;
     }
-    //todo: check to see if student node's m_act is false;
-    cout << "m_active: " << m_active << endl;
-    cout << "m_inactive: " << m_inactive  << endl;
-    cout << "ptr->m_act: " << ptr->m_act << endl;
+    cout << "m_active (# active nodes): " << m_active << endl;
+    cout << "m_inactive (# inactive nodes): " << m_inactive  << endl;
     return;
    
 }
@@ -108,16 +106,18 @@ int BST<T>::compress(Node<T>*  head_ptr)
     }
     //CASE 3 - unactive
     else {
-        //CASE 1 - Sub-trees exist, go left, hard right
+        //CASE 3.1 - Sub-trees exist, go left, hard right
+        
         //head_ptr is the one we want to delete/swap data with
-        //head_ptr isn't necessarily the head of the whole tree, it's the bottom most unactive node after traversing through the tree
+        //head_ptr isn't necessarily head of the tree, it's the lowest unactive node 
         if(head_ptr->get_right_ptr() && head_ptr->get_left_ptr())
         {
-            cout << "compress: case 1 - inactive" << endl;
+            cout << "compress: case 3 - inactive" << endl;
             Node<T>* cur_ptr = head_ptr;
             Node<T>* left_ptr = head_ptr->get_left_ptr();
             Node<T>* right_ptr = head_ptr->get_right_ptr();
             cur_ptr = head_ptr->get_left_ptr();
+            
             if(cur_ptr->get_right_ptr()) {
                 while(cur_ptr->get_right_ptr())
                 {
@@ -134,46 +134,48 @@ int BST<T>::compress(Node<T>*  head_ptr)
                 //----okay something has to happen now
             }
            
-            //CASE 1.1 - check if right subtree has left child
-            if(right_ptr->get_left_ptr())
-            {
-                cout << "compress: case 1.1"<< count << endl;
-                left_ptr->set_right_link(right_ptr->get_left_ptr());
-            }
-            ++count;
-            cout << "count in case 1: "<< count << endl;
+//            if(right_ptr->get_left_ptr())
+//            {
+//                cout << "compress: case 3 cont"  << endl;
+//                left_ptr->set_right_link(right_ptr->get_left_ptr());
+//            }
             
+            ++count;
+            cout << "exiting compress case 3"  << endl;
             return count;
         }
-        //CASE 2 - onlym left sub-trees
-        else if(!head_ptr->get_right_ptr())
+        //CASE 3.2 - only left sub-trees
+        else if(!(head_ptr->get_right_ptr()))
         {
-            cout << "compress: case 2- left ST" << endl;
+            cout << "compress: case 3.2- left ST" << endl;
             Node<T>* cur_ptr;
             cur_ptr = head_ptr;
-            while(cur_ptr->get_left_ptr())
-            {
-                cur_ptr = cur_ptr->get_left_ptr();
-            }
+            //move cur down left once, cur will be the new pointer that replaces head
+            cur_ptr = cur_ptr->get_left_ptr();
+            //swap data, head now has cur data
+            head_ptr->get_data() = cur_ptr->get_data();
+            //delete cur ptr, extraneous after swap
             delete cur_ptr;
             ++count;
+            head_ptr->m_act = true;
             return count;
         }
-        //CASE 3 - only right sub-trees
+        //CASE 3.3 - only right sub-trees
         else if(!(head_ptr->get_left_ptr()))
         {
-            cout << "compress: case 3- right ST" << endl;
+            cout << "compress: case 3.3- right ST" << endl;
             Node<T>* cur_ptr;
             cur_ptr = head_ptr;
-            while(cur_ptr->get_right_ptr())
-            {
-                cur_ptr = cur_ptr->get_right_ptr();
-            }
+            //move cur down right once, cur will be the new pointer that replaces head
+            cur_ptr = cur_ptr->get_right_ptr();
+            //swap data, head now has cur data
+            head_ptr->get_data() = cur_ptr->get_data();
+            //delete cur ptr, extraneous after swap
             delete cur_ptr;
+            head_ptr->m_act = true;
             ++count;
             cout << "count: " << count << endl;
             return count;
-            
         }
         else
         {
