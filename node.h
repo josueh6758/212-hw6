@@ -28,7 +28,7 @@ template<class T>
      Node<T>* m_left;  // pointer to the left subtree. 
      Node<T>* m_right; // pointer to the right subtree.
      bool node_equality(Node<T>*, Node<T>*, bool& );
-    void operator = 
+    
    };
 
 

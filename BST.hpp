@@ -36,6 +36,7 @@ public:
     bool is_member(T&) const;
     void begin() {m_cursor=m_root;}
     bool operator ==(BST&);
+   // bool operator = (int)
     
     int size_act() {return m_active;}
     int size_inact() {return m_inactive;}
@@ -112,30 +113,25 @@ int BST<T>::compress(Node<T>*  head_ptr)
         //head_ptr isn't necessarily the head of the whole tree, it's the bottom most unactive node after traversing through the tree
         if(head_ptr->get_right_ptr() && head_ptr->get_left_ptr())
         {
-            cout << "compress: case 1- inactive" << endl;
+            cout << "compress: case 1 - inactive" << endl;
             Node<T>* cur_ptr = head_ptr;
             Node<T>* left_ptr = head_ptr->get_left_ptr();
             Node<T>* right_ptr = head_ptr->get_right_ptr();
             cur_ptr = head_ptr->get_left_ptr();
-            //cout << "before while loop" << endl;
-            if(cur_ptr->get_right_ptr()) {                while(cur_ptr->get_right_ptr())
+            if(cur_ptr->get_right_ptr()) {
+                while(cur_ptr->get_right_ptr())
                 {
-                    //cout << " in while loop" << endl;
                     //----move right ptr to the bottom right
                     cur_ptr = cur_ptr->get_right_ptr();
-                    //cout << " leaving while loop" << endl;
                 }
-                //----swap data, gotta make it redundant because can't assign directly
-                int head_ssn =  head_ptr->get_data().num_ssn();
-                cout << "head ssn before swap: " << head_ssn << endl;
-                int cur_ssn = cur_ptr->get_data().num_ssn();
-                head_ptr->get_data().num_ssn() = cur_ssn;
-                cout << "head ssn after swap: " <<  head_ssn << endl;
-                //----delete the bottom right ptr after data swap
+                //----swap data
+                head_ptr->get_data() = cur_ptr->get_data();
                 delete cur_ptr;
                 //re-activate ptr
-                head_ptr->is_active() == true;
+                head_ptr->m_act = true;
+                //---make new cursor pointer to go back to the head
                 Node<T>* cur_ptr = head_ptr;
+                //----okay something has to happen now
             }
            
             //CASE 1.1 - check if right subtree has left child
@@ -185,7 +181,7 @@ int BST<T>::compress(Node<T>*  head_ptr)
             return 0;
         }
     }
-    
+    cout << "exiting compress " << endl;
 }
 
 
