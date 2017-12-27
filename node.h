@@ -48,6 +48,32 @@ void node_print(Node<T>* root){
 
 }
 
+
+
+template<class T>
+ Node<T>* node_parent(Node<T>* root,const T& student){
+Node<T>* cursor=root;
+Node<T>* parent=0;
+
+if(cursor->get_data().num_ssn() == student.num_ssn()){ 
+	cout<<"that node has no parent\n";
+	return parent;}
+
+while(cursor!=0)//keep searching till we fall off the tree
+{
+	if(cursor->get_data().num_ssn() == student.num_ssn()) return parent;
+	if(cursor->get_data().num_ssn() > student.num_ssn()){
+		parent=cursor;
+		cursor= cursor->get_left_ptr();
+		}
+	else {	parent=cursor;
+		cursor = cursor->get_right_ptr();}
+
+}
+return 0;//if we havent found anything then we'll return the 0 pointer aka null
+
+}
+
 template<class T>
  Node<T>* node_search(Node<T>* root,const T& student){
 Node<T>* cursor=root;

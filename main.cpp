@@ -50,7 +50,22 @@ bool BST<T>::remove(T& student)
          cout << "student node is suppose to be inactive: " << student.num_ssn() << endl;
     //TODO: set student's node to inactive:
         Node<T>* ptr = node_search(m_root,student);
-	 ptr->m_act = false;
+	//now check if this is a leaf!!!! 
+	if(ptr->is_leaf()){
+		
+		Node<T>* parent= node_parent(m_root,student);
+		if(parent->get_left_ptr()==ptr) parent->set_left_link(0);
+		
+		if(parent->get_right_ptr()==ptr) parent->set_right_link(0);
+
+		delete ptr;
+		//ptr = 0; //set the ptr to 0 now or else parent will link to empty memory	
+		--m_active;
+		cout<<"that student is a leaf, safely removing!\n";
+		return true;
+	}
+	
+	ptr->m_act = false;
         --m_active;
         ++m_inactive;
 	 cout << "m_active (# active nodes): " << m_active << endl;
@@ -99,6 +114,12 @@ int BST<T>::workit(Node<T>*  head_ptr)
         //head_ptr is the one we want to delete/swap data with
         //head_ptr isn't necessarily head of the tree, it's the lowest unactive node 
        cout<<"Compress gonna make do its job on: "<<head_ptr->get_data().string_ssn()<<endl;
+	if(head_ptr->get_right_ptr()&&head_ptr->get_left_ptr()) cout<<"this node has both children!\n";
+	else if(head_ptr->get_right_ptr()) cout<<"this node only has right child\n";
+	else if(head_ptr->get_left_ptr()) cout<<"this node only has left\n";
+	else cout<<"this node has no children\n";
+
+
 	if(head_ptr->get_right_ptr() && head_ptr->get_left_ptr())
         {
             cout << "compress: case 3 - inactive" << endl;
@@ -134,7 +155,7 @@ int BST<T>::workit(Node<T>*  head_ptr)
             return count;
         }
         //CASE 3.2 - only left sub-trees
-        else if(!(head_ptr->get_right_ptr()))
+        else if(head_ptr->get_left_ptr())
         {
             cout << "compress: case 3.2- left ST" << endl;
             Node<T>* cur_ptr;
@@ -150,7 +171,7 @@ int BST<T>::workit(Node<T>*  head_ptr)
             return count;
         }
         //CASE 3.3 - only right sub-trees
-        else if(!(head_ptr->get_left_ptr()))
+        else if(head_ptr->get_left_ptr())
         {
             cout << "compress: case 3.3- right ST" << endl;
             Node<T>* cur_ptr;
