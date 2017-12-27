@@ -15,15 +15,17 @@ template<class T>
      void insert( T&);
      bool is_member(const T&) const;
      long size() const { return m_active; }
-     int compress(Node<T>*);  // removed all marked nodes.
+     int compress();  // removed all marked nodes.
+     
      //Bag<T> sort() const; // produce a sorted Bag.
      bool operator ==(BST&);
       Node<T>* m_root;
 
    private:
   //   Node<T>* m_root;
-     long  m_active;   // count of active nodes.
-     long  m_inactive; // count of inactive nodes.  
+     long  m_active;   // count of active nodes. 
+     long  m_inactive; // count of inactive nodes.
+     int workit(Node<T>*);  
        };
 
 template<class T>
@@ -63,30 +65,41 @@ bool BST<T>::remove(T& student)
 
 
 template<class T>
-int BST<T>::compress(Node<T>*  head_ptr)
+int BST<T>::compress(){
+if(!m_root) return 0;
+cout<<"compress is taking out the trash!\n\n";
+return workit(m_root);
+
+}
+
+template<class T>
+int BST<T>::workit(Node<T>*  head_ptr)
 {
     //CASE 1 - non-existent
     if(!head_ptr) return 0;
     int count = 0;
+    cout<<"Compress is at: "<<head_ptr->get_data().string_ssn()<<endl;
+    
+	
     //count = compress(head_ptr->get_left_ptr());
     //count = compress(head_ptr->get_right_ptr());
     
     //CASE 2 - active
-    if(head_ptr->m_act)
+    //if(head_ptr->m_act)
         //keep calling the recursion until it gets to an unactive node (see case 3)
-    {
-        count += compress(head_ptr->get_left_ptr());
-        count += compress(head_ptr->get_right_ptr());
+    
+        count += workit(head_ptr->get_left_ptr());
+        count += workit(head_ptr->get_right_ptr());
         //count += count;
-        return count;
-    }
+    
     //CASE 3 - unactive
-    else if (!(head_ptr->m_act)){
+    if (!(head_ptr->m_act)){
         //CASE 3.1 - Sub-trees exist, go left, hard right
         
         //head_ptr is the one we want to delete/swap data with
         //head_ptr isn't necessarily head of the tree, it's the lowest unactive node 
-        if(head_ptr->get_right_ptr() && head_ptr->get_left_ptr())
+       cout<<"Compress gonna make do its job on: "<<head_ptr->get_data().string_ssn()<<endl;
+	if(head_ptr->get_right_ptr() && head_ptr->get_left_ptr())
         {
             cout << "compress: case 3 - inactive" << endl;
             Node<T>* cur_ptr = head_ptr;
@@ -159,7 +172,8 @@ int BST<T>::compress(Node<T>*  head_ptr)
             return 0;
         }
     }
-    cout << "exiting compress " << endl;
+    cout << "no junk found here!" << endl;
+    return count;
 }
 
 
@@ -226,7 +240,7 @@ void BST<T>::insert( T& entry){
 int main(){
 	BST<Student> tree;
 	
-	for(int x=0;x<10;++x){
+	for(int x=0;x<6;++x){
 		Student input;
 		tree.insert(input);
 	}
@@ -238,6 +252,6 @@ int main(){
 	cout<<find_me.string_ssn()<<" is who will get inactivated!\n";
 	tree.remove(find_me);
 	tree.display();
-  cout<< tree.compress(tree.m_root);
+  cout<< tree.compress();
 
 }
