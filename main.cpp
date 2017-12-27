@@ -6,20 +6,22 @@ using namespace std;
 template<class T>
    class BST {
    public:
-     BST(): m_root(0) {}
+     BST(): m_root(0),m_active(0),m_inactive(0){}
      BST(const BST&);
      void operator=(const BST&);
      //~BST();
      void display();
-     bool remove(const T&);
+     bool remove( T&);
      void insert( T&);
      bool is_member(const T&) const;
      long size() const { return m_active; }
-     void compress();  // removed all marked nodes.
+     int compress(Node<T>*);  // removed all marked nodes.
      //Bag<T> sort() const; // produce a sorted Bag.
      bool operator ==(BST&);
+      Node<T>* m_root;
+
    private:
-     Node<T>* m_root;
+  //   Node<T>* m_root;
      long  m_active;   // count of active nodes.
      long  m_inactive; // count of inactive nodes.  
        };
@@ -37,12 +39,133 @@ return equality;
 
 } 
 
+template<class T>
+bool BST<T>::remove(T& student)
+{
+    //pre-condition: takes in object pointer by reference
+    //post-condition: sets node to unactive
+    if (BST<T>::is_member(student)) {
+         cout << "student node is suppose to be inactive: " << student.num_ssn() << endl;
+    //TODO: set student's node to inactive:
+        Node<T>* ptr = node_search(m_root,student);
+	 ptr->m_act = false;
+        --m_active;
+        ++m_inactive;
+	 cout << "m_active (# active nodes): " << m_active << endl;
+   	 cout << "m_inactive (# inactive nodes): " << m_inactive  << endl;
+	return true;
+    }
+    cout << "m_active (# active nodes): " << m_active << endl;
+    cout << "m_inactive (# inactive nodes): " << m_inactive  << endl;
+    return false;
+   
+}
 
+
+template<class T>
+int BST<T>::compress(Node<T>*  head_ptr)
+{
+    //CASE 1 - non-existent
+    if(!head_ptr) return 0;
+    int count = 0;
+    //count = compress(head_ptr->get_left_ptr());
+    //count = compress(head_ptr->get_right_ptr());
+    
+    //CASE 2 - active
+    if(head_ptr->m_act)
+        //keep calling the recursion until it gets to an unactive node (see case 3)
+    {
+        count += compress(head_ptr->get_left_ptr());
+        count += compress(head_ptr->get_right_ptr());
+        //count += count;
+        return count;
+    }
+    //CASE 3 - unactive
+    else if (!(head_ptr->m_act)){
+        //CASE 3.1 - Sub-trees exist, go left, hard right
+        
+        //head_ptr is the one we want to delete/swap data with
+        //head_ptr isn't necessarily head of the tree, it's the lowest unactive node 
+        if(head_ptr->get_right_ptr() && head_ptr->get_left_ptr())
+        {
+            cout << "compress: case 3 - inactive" << endl;
+            Node<T>* cur_ptr = head_ptr;
+            Node<T>* left_ptr = head_ptr->get_left_ptr();
+            Node<T>* right_ptr = head_ptr->get_right_ptr();
+            cur_ptr = head_ptr->get_left_ptr();
+            
+            if(cur_ptr->get_right_ptr()) {
+                while(cur_ptr->get_right_ptr())
+                {
+                    //----move right ptr to the bottom right
+                    cur_ptr = cur_ptr->get_right_ptr();
+                }
+                //----swap data
+                head_ptr->get_data() = cur_ptr->get_data();
+                delete cur_ptr;
+                //re-activate ptr
+                head_ptr->m_act = true;
+                //---make new cursor pointer to go back to the head
+                Node<T>* cur_ptr = head_ptr;
+                //----okay something has to happen now
+            }
+           
+//            if(right_ptr->get_left_ptr())
+//            {
+//                cout << "compress: case 3 cont"  << endl;
+//                left_ptr->set_right_link(right_ptr->get_left_ptr());
+//            }
+            
+            ++count;
+            cout << "exiting compress case 3"  << endl;
+            return count;
+        }
+        //CASE 3.2 - only left sub-trees
+        else if(!(head_ptr->get_right_ptr()))
+        {
+            cout << "compress: case 3.2- left ST" << endl;
+            Node<T>* cur_ptr;
+            cur_ptr = head_ptr;
+            //move cur down left once, cur will be the new pointer that replaces head
+            cur_ptr = cur_ptr->get_left_ptr();
+            //swap data, head now has cur data
+            head_ptr->get_data() = cur_ptr->get_data();
+            //delete cur ptr, extraneous after swap
+            delete cur_ptr;
+            ++count;
+            head_ptr->m_act = true;
+            return count;
+        }
+        //CASE 3.3 - only right sub-trees
+        else if(!(head_ptr->get_left_ptr()))
+        {
+            cout << "compress: case 3.3- right ST" << endl;
+            Node<T>* cur_ptr;
+            cur_ptr = head_ptr;
+            //move cur down right once, cur will be the new pointer that replaces head
+            cur_ptr = cur_ptr->get_right_ptr();
+            //swap data, head now has cur data
+            head_ptr->get_data() = cur_ptr->get_data();
+            //delete cur ptr, extraneous after swap
+            delete cur_ptr;
+            head_ptr->m_act = true;
+            ++count;
+            cout << "count: " << count << endl;
+            return count;
+        }
+        else
+        {
+            cout << "compress: something is wrong" << endl;
+            return 0;
+        }
+    }
+    cout << "exiting compress " << endl;
+}
 
 
 template<class T>
 void BST<T>::display(){
-"This is the tree:\n";
+cout<<"\nThis is the tree(inorder):\n";
 if(m_root==0){ cout<<"empty tree!"<<endl; return;}
 node_print(m_root);
 }
@@ -62,7 +185,7 @@ void BST<T>::insert( T& entry){
 	if(m_root==0){
 		//means this is an empty tree 
 		m_root = new Node<T>( entry);
-		cout<<"Initiated a Tree!\nHead: "<<m_root->get_data().num_ssn()<<endl;
+		cout<<"Initiated a Tree!\nHead: "<<m_root->get_data().num_ssn()<<endl<<endl;
 		++m_active;
 		return;
 	}	
@@ -79,19 +202,21 @@ void BST<T>::insert( T& entry){
 		{
 				Node<T>* insert_node = node_new(entry);
 				cursor->set_left_link(insert_node);
+				//cout<<"count going up!\n";
 				++m_active;
 				return;
 				}
 		if(entry.num_ssn() > cursor->get_data().num_ssn() && !(cursor->get_right_ptr())){
 				cursor->set_right_link(node_new(entry));
+				//cout<<"count going up!\n";
 				++m_active;
 				return;
 				}
 		}
 	}
 	//while loop will stop when it reaches the end. then we insert to left or right
-	if(entry.num_ssn() < cursor->get_data().num_ssn()) {cursor->set_left_link(node_new(entry));return;}
-	if(entry.num_ssn() > cursor->get_data().num_ssn()) {cursor->set_right_link(node_new(entry));return;}
+	if(entry.num_ssn() < cursor->get_data().num_ssn()) {cursor->set_left_link(node_new(entry));++m_active;return;}
+	if(entry.num_ssn() > cursor->get_data().num_ssn()) {cursor->set_right_link(node_new(entry));++m_active;return;}
 	//if(entry.num_ssn() > cursor->get_data().num_ssn()) return;
 
 }
@@ -110,4 +235,9 @@ int main(){
 	tree.display();
 	if(tree.is_member(find_me)) cout<<"he in here!\n";
 	else cout<< "he not in here!\n";
+	cout<<find_me.string_ssn()<<" is who will get inactivated!\n";
+	tree.remove(find_me);
+	tree.display();
+  cout<< tree.compress(tree.m_root);
+
 }
