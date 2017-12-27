@@ -261,18 +261,24 @@ void BST<T>::insert( T& entry){
 int main(){
 	BST<Student> tree;
 	
-	for(int x=0;x<6;++x){
+	Student find_me;
+	tree.insert(find_me);
+	for(int x=0;x<3;++x){
 		Student input;
 		tree.insert(input);
 	}
-	Student find_me;
-	tree.insert(find_me);
+	for(int x=0;x<4;++x){
+		Student input;
+		tree.insert(input);
+	}
+	
+
 	tree.display();
 	if(tree.is_member(find_me)) cout<<"he in here!\n";
 	else cout<< "he not in here!\n";
 	cout<<find_me.string_ssn()<<" is who will get inactivated!\n";
 	tree.remove(find_me);
 	tree.display();
-  cout<< tree.compress();
-
+	cout<< tree.compress()<<endl;
+	tree.display();
 }
