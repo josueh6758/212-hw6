@@ -52,14 +52,12 @@ bool BST<T>::remove(T& student)
         Node<T>* ptr = node_search(m_root,student);
 	//now check if this is a leaf!!!! 
 	if(ptr->is_leaf()){
-		
+		if(ptr=m_root) m_root=0; //if we delete the head then update it!
 		Node<T>* parent= node_parent(m_root,student);
 		if(parent->get_left_ptr()==ptr) parent->set_left_link(0);
-		
 		if(parent->get_right_ptr()==ptr) parent->set_right_link(0);
 
-		delete ptr;
-		//ptr = 0; //set the ptr to 0 now or else parent will link to empty memory	
+		delete ptr;	
 		--m_active;
 		cout<<"that student is a leaf, safely removing!\n";
 		return true;
@@ -125,7 +123,23 @@ int BST<T>::workit(Node<T>*  head_ptr)
             cout << "compress: case 3 - inactive" << endl;
             Node<T>* cur_ptr = head_ptr;
             Node<T>* left_ptr = head_ptr->get_left_ptr();
-            Node<T>* right_ptr = head_ptr->get_right_ptr();
+	    if(left_ptr->is_leaf()){
+	   	head_ptr->set_data(left_ptr->get_data());
+	       head_ptr->set_left_link(0);
+       		delete left_ptr;
+		head_ptr->m_act=true;
+       	       --m_inactive;	
+	       return 1;	       
+	    }
+	    if(left_ptr->get_left_ptr()){
+	   	head_ptr->set_data(left_ptr->get_data());
+	       	head_ptr->set_left_link(left_ptr->get_left_ptr());
+       		delete left_ptr;
+       	       --m_inactive;
+       		head_ptr->m_act =true;	       
+	       return 1;	       
+	    }
+            Node<T>* right_ptr = left_ptr->get_right_ptr();
             cur_ptr = head_ptr->get_left_ptr();
             
             if(cur_ptr->get_right_ptr()) {
@@ -135,7 +149,13 @@ int BST<T>::workit(Node<T>*  head_ptr)
                     cur_ptr = cur_ptr->get_right_ptr();
                 }
                 //----swap data
-                head_ptr->get_data() = cur_ptr->get_data();
+                head_ptr->set_data( cur_ptr->get_data() );
+		if(cur_ptr->get_left_ptr()){
+			Node<T>* relink_ptr= node_parent(m_root,cur_ptr->get_data());
+			relink_ptr->set_right_link(cur_ptr->get_left_ptr());
+			//now we relinked the tree in case the bot right node has a left
+			//child
+		}
                 delete cur_ptr;
                 //re-activate ptr
                 head_ptr->m_act = true;
@@ -163,15 +183,17 @@ int BST<T>::workit(Node<T>*  head_ptr)
             //move cur down left once, cur will be the new pointer that replaces head
             cur_ptr = cur_ptr->get_left_ptr();
             //swap data, head now has cur data
-            head_ptr->get_data() = cur_ptr->get_data();
+            head_ptr->set_data(cur_ptr->get_data());
             //delete cur ptr, extraneous after swap
-            delete cur_ptr;
+            head_ptr->set_left_link(cur_ptr->get_left_ptr());
+	    head_ptr->set_right_link(cur_ptr->get_right_ptr()); //relink 
+	    delete cur_ptr;
             ++count;
             head_ptr->m_act = true;
             return count;
         }
         //CASE 3.3 - only right sub-trees
-        else if(head_ptr->get_left_ptr())
+        else if(head_ptr->get_right_ptr())
         {
             cout << "compress: case 3.3- right ST" << endl;
             Node<T>* cur_ptr;
@@ -179,7 +201,9 @@ int BST<T>::workit(Node<T>*  head_ptr)
             //move cur down right once, cur will be the new pointer that replaces head
             cur_ptr = cur_ptr->get_right_ptr();
             //swap data, head now has cur data
-            head_ptr->get_data() = cur_ptr->get_data();
+            head_ptr->set_data( cur_ptr->get_data());
+	    head_ptr->set_left_link(cur_ptr->get_left_ptr());
+	    head_ptr->set_right_link(cur_ptr->get_right_ptr());
             //delete cur ptr, extraneous after swap
             delete cur_ptr;
             head_ptr->m_act = true;
@@ -261,13 +285,16 @@ void BST<T>::insert( T& entry){
 int main(){
 	BST<Student> tree;
 	
-	Student find_me;
-	tree.insert(find_me);
-	for(int x=0;x<3;++x){
+	Student head;
+	tree.insert(head);
+	for(int x=0;x<2;++x){
 		Student input;
 		tree.insert(input);
 	}
-	for(int x=0;x<4;++x){
+	Student find_me,me_too;
+	tree.insert(find_me);
+	tree.insert(me_too);
+	for(int x=0;x<5;++x){
 		Student input;
 		tree.insert(input);
 	}
@@ -277,7 +304,10 @@ int main(){
 	if(tree.is_member(find_me)) cout<<"he in here!\n";
 	else cout<< "he not in here!\n";
 	cout<<find_me.string_ssn()<<" is who will get inactivated!\n";
+	cout<<me_too.string_ssn()<<" is who will get inactivated!\n";
+
 	tree.remove(find_me);
+	tree.remove(me_too);
 	tree.display();
 	cout<< tree.compress()<<endl;
 	tree.display();
